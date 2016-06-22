@@ -3,6 +3,8 @@ logs
 *.log
 npm-debug.log*
 
+# IDE
+.idea/
 # Runtime data
 pids
 *.pid
@@ -30,6 +32,8 @@ build/Release
 node_modules
 jspm_packages
 
+# Debug log from npm
+npm-debug.log
 # Optional npm cache directory
 .npm
 
