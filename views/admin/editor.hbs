@@ -1,0 +1,26 @@
+<link href="/lib/editor.md/css/editormd.min.css" rel='stylesheet'>
+<div id="md-editor"></div>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/editor.md/editormd.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var editor = editormd("md-editor", {
+            width: "90%",
+            height: 740,
+            path: "/lib/editor.md/lib/",
+            toolbarIcons: function () {
+                var icons = editormd.toolbarModes['full'];
+                icons.push('||');
+                icons.push('save');
+                icons.push('send');
+                icons.push('list');
+                return icons;
+            },
+            toolbarIconsClass: {
+                save: 'fa-save',
+                send: 'fa-send',
+                list: 'fa-bars'
+            }
+        });
+    });
+</script>
