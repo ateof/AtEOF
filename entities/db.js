@@ -1,9 +1,9 @@
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('ateof.db');
-
+var extend = require('util')._extend;
 var TypeMap = {
   Number: 'INTEGER',
-  String: 'Text',
+  String: 'TEXT',
   Date: 'INTEGER',
   Boolean: 'INTEGER'
 };
@@ -29,6 +29,7 @@ module.exports.createTable = function (table, define) {
   fields.push('createAt INTEGER');
   fields.push('updateAt INTEGER');
   var sql = `CREATE TABLE IF NOT EXISTS ${table} (id INTEGER PRIMARY KEY, ${fields.join(',')}) `;
+  console.log(sql);
   return new Promise((resolve, reject) => {
     db.run(sql, (err, result) => {
       console.log('创建表', err, result);
@@ -97,7 +98,7 @@ module.exports.find = function (table, options, fields) {
     orderBy: '',
     condition: ''
   };
-
+  extend(opts, options);
   var cols = '*';
   if (fields) {
     cols = fields.join(',');
@@ -111,10 +112,11 @@ module.exports.find = function (table, options, fields) {
   if (opts.orderBy) {
     order = 'ORDER BY ' + opts.orderBy;
   }
-  var current = (opts.page - 1) * opts.page.size;
-
+  var current = (opts.page - 1) * opts.size;
+  var sql = `SELECT ${cols} FROM ${table} ${where} ${order} LIMIT ${opts.size} OFFSET ${current}`;
+  console.log(sql);
   return new Promise((resolve, reject) => {
-    db.all(`SELECT ${cols} FROM ${table} ${where} ${order} LIMIT ${current} OFFSET ${opts.size}`, (err, rows) => {
+    db.all(sql, (err, rows) => {
       if (err) {
         return reject(err);
       }
@@ -144,8 +146,9 @@ module.exports.update = function (table, condition, result) {
   if (condition) {
     where = 'WHERE ' + condition;
   }
+  var sql = `UPDATE ${table} SET ${sets.join(',')}, updateAt=DATETIME('now', 'localtime') ${where}`;
   return new Promise((resolve, reject) => {
-    db.run(`UPDATE ${table} SET ${sets.join(',')}, updateAt=DATETIME('now', 'localtime') ${where}`, results, (err, data) => {
+    db.run(sql, results, (err, data) => {
       if (err) {
         return reject(err);
       }
@@ -157,28 +160,45 @@ module.exports.update = function (table, condition, result) {
 module.exports.insert = function (table, entity) {
   var fields = [];
   var values = [];
+  var q = ['?', '?'];
   for (var field in entity) {
     if (entity.hasOwnProperty(field)) {
       if (field != 'id') {
         fields.push(field);
-        values.push(entity[field]);
+        var value = entity[field];
+        values.push(value);
+        q.push('?');
       }
     }
   }
   // 创建更新时间
   fields.push('createAt');
-  values.push('DATETIME("now", "localtime")');
+  values.push(new Date().getTime());
 
   fields.push('updateAt');
-  values.push('DATETIME("now", "localtime")');
+  values.push(new Date().getTime());
 
-  var sql = `INSERT INTO ${table} (${fields.join(',')}) VALUES (${values.join(',')})`;
+  var sql = `INSERT INTO ${table} (${fields.join(',')}) VALUES (${q.join(',')})`;
+  console.log(sql);
   return new Promise((resolve, reject) => {
-    db.run(sql, (err, result) => {
+    db.run(sql, values, function (err, result) {
       if (err) {
         return reject(err);
       }
-      resolve(result);
+      resolve({id: this.lastID});
     });
   });
+};
+
+module.exports.escape = function (keyword) {
+  keyword = keyword.replace(/\//g, "//");
+  keyword = keyword.replace(/'/g, "''");
+  keyword = keyword.replace(/\[/g, "/[");
+  keyword = keyword.replace(/]/g, "/]");
+  keyword = keyword.replace(/%/g, "/%");
+  keyword = keyword.replace(/&/g, "/&");
+  keyword = keyword.replace(/_/g, "/_");
+  keyword = keyword.replace(/\(/g, "/(");
+  keyword = keyword.replace(/\)/g, "/)");
+  return keyword;
 };

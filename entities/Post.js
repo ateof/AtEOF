@@ -2,22 +2,28 @@ var db = require('./db');
 module.exports = exports = Post;
 
 var postDefine = {
+  title: {
+    type: String,
+    required: true
+  },
   markdown: {
     type: String,
     required: true
   },
-  html: String,
+  html: {
+    type: String,
+    required: true
+  },
   publish: Boolean
 };
 
-db.createTable(postDefine).then((result) => {
+db.createTable('post', postDefine).then((result) => {
   console.log(result);
 }).catch((err) => {
   console.log(err);
 });
 
 function Post(post) {
-  this.id = null;
   for (var field in post) {
     if (post.hasOwnProperty(field)) {
       if (postDefine[field]) {
@@ -25,13 +31,19 @@ function Post(post) {
       }
     }
   }
+  if (post.id) {
+    this.id = post.id;
+  }
 }
 
 Post.prototype.save = function () {
-  if(!this.id){
+  if (!this.id) {
     return db.insert('post', this);
   } else {
-    Post.update(this.id, this);
+    return Post.update(parseInt(this.id), this).then((result) => {
+      console.log('update', result);
+      return {id: this.id};
+    });
   }
 };
 
@@ -40,13 +52,13 @@ Post.findById = function (id) {
 };
 
 // 模糊查询
-Post.find = function (keywords, page) {
+Post.find = function (keywords, page, fileds) {
   var condition = '';
-  if(keywords){
+  if (keywords) {
     var arr = keywords.split(/\s|,|，/).filter((word) => {
       return word;
     }).map(function (word) {
-      return `markdown LIKE %${word}% `;
+      return `markdown LIKE '%${db.escape(word)}%' escape '/' `;
     });
     condition = arr.join(' OR ');
   }
@@ -55,7 +67,7 @@ Post.find = function (keywords, page) {
     page: page,
     orderBy: 'createAt DESC',
     condition: condition
-  });
+  }, fileds);
 };
 
 Post.update = function (id, result) {

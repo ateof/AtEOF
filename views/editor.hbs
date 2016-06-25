@@ -1,0 +1,118 @@
+<link href="/lib/editor.md/css/editormd.min.css" rel='stylesheet'>
+<div id="md-editor"></div>
+<script src="/lib/editor.md/editormd.min.js"></script>
+<script type="text/javascript">
+$(function () {
+  var editor = window.testEditor = editormd("md-editor", {
+    width: "90%",
+    height: 740,
+    path: "/lib/editor.md/lib/",
+    saveHTMLToTextarea: true,
+    sequenceDiagram : true,
+    tex: true,
+    taskList : true,
+    flowChart : true,
+    tocm: true,
+    codeFold : true,
+    tocStartLevel : 2,
+    toolbarIcons: function () {
+      var icons = editormd.toolbarModes['full'];
+      icons.push('||');
+      icons.push('save');
+      icons.push('send');
+      icons.push('list');
+      return icons;
+    },
+    toolbarIconsClass: {
+      save: 'fa-save',
+      send: 'fa-send',
+      list: 'fa-bars'
+    },
+    lang: {
+      toolbar: {
+        save: "保存草稿",
+        send: "发布文章",
+        list: "文章列表"
+      }
+    },
+    toolbarHandlers: {
+      save: function (cm, icon, cursor, selection) {
+        save(false);
+      },
+      send: function (cm, icon, cursor, selection) {
+        save(true);
+      },
+      list: function (cm, icon, cursor, selection) {
+        resizeSideList();
+        $('.side-list').fadeToggle();
+      }
+    }
+  });
+  editor.on("resize", function(){
+      resizeSideList();
+  });
+  showList(1);
+  function showList(page) {
+    var $sideList = getSideList();
+      $sideList.empty();
+    $.getJSON('/api/posts?page=' + page).done(function (posts) {
+      for(var i=0; i<posts.length; i++){
+        var $li = $('<li data-id="' + posts[i].id + '">' + posts[i].title + '</li>');
+          $sideList.append($li);
+      }
+    }).fail(function (err) {
+      console.err(err);
+    });
+  }
+
+  function getSideList(){
+    var $sideList = $('.side-list');
+    if($sideList.length){
+        return $sideList;
+    }
+    $sideList = $('<ul class="side-list">').hide();
+    $sideList.on('click', 'li', function () {
+      var $li = $(this);
+      var id = $li.attr('data-id');
+      $.getJSON('/api/posts/' + id).done(function (post) {
+          $('#md-editor').attr('data-id', post.id);
+          editor.setMarkdown(post.markdown);
+      })
+    });
+    $sideList.appendTo('#md-editor');
+    return $sideList;
+  }
+
+  function resizeSideList() {
+    var $sideList = getSideList();
+    $sideList.css({
+        position: 'absolute',
+        top: $(".editormd-toolbar-container").height(),
+        right: 0,
+        height: $('.editormd-preview').height(),
+        width: '300px',
+        margin: '0',
+        background: 'rgba(200,200,200,0.5)'
+    });
+  }
+  function save(isPublish) {
+    var html = editor.getHTML();
+    var markdown = editor.getMarkdown();
+    var data = {
+      html: html,
+      markdown: markdown,
+      publish: isPublish
+    };
+    var id = $('#md-editor').attr('data-id');
+    if (id) {
+      data.id = id;
+    }
+
+    $.post('/api/posts', data).done(function (data) {
+        $('#md-editor').attr('data-id', data.id);
+    }).fail(function (err) {
+        console.error('保存失败', err);
+    });
+  }
+});
+</script>

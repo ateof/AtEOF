@@ -1,1 +1,53 @@
-{{{post.html}}}
+<link href="/lib/editor.md/css/editormd.preview.min.css" rel='stylesheet'>
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.6.0/katex.min.css">-->
+<div class="markdown-body editormd-html-preview">
+  {{{post.html}}}
+</div>
+
+<script>
+    loadScripts(function () {
+        $('.editormd-tex').each(function (index, ele) {
+            katex.render(ele.innerText, ele);
+        });
+        $('.flowchart').each(function (index, ele) {
+            var $flowchat = $(ele).attr('id', 'flowchat-' + index);
+            var diagram = flowchart.parse($flowchat.text());
+            $flowchat.empty();
+            diagram.drawSVG('flowchat-' + index);
+        });
+
+        $('.sequence-diagram').sequenceDiagram({theme: "simple"});
+    });
+
+    function loadScripts(callback) {
+        var scripts = [];
+        if ($('code').length) {
+            scripts.push('/lib/editor.md/lib/prettify.min.js');
+        }
+        if ($('.flowchart').length || $('.sequence-diagram').length) {
+            scripts.push('/lib/editor.md/lib/raphael.min.js', '/lib/editor.md/lib/underscore.min.js');
+        }
+        if ($('.flowchart').length) {
+            scripts.push('/lib/editor.md/lib/flowchart.min.js', '/lib/editor.md/lib/jquery.flowchart.min.js');
+        }
+        if ($('.sequence-diagram').length) {
+            scripts.push('/lib/editor.md/lib/sequence-diagram.min.js');
+        }
+        if ($('.editormd-tex').length) {
+            $('head').append('<link href="/lib/KaTeX/dist/katex.min.css" rel="stylesheet">');
+            scripts.push('/lib/KaTeX/dist/katex.min.js');
+        }
+        loadAll(scripts, callback);
+    }
+    function loadAll(scripts, callback) {
+        if(!scripts.length){
+            return callback();
+        }
+        var script = scripts.shift();
+        $.getScript(script).fail(function () {
+            console.error('加载 %s 失败', script);
+        }).always(function () {
+            loadAll(scripts, callback);
+        });
+    }
+</script>
