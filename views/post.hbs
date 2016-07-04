@@ -50,10 +50,11 @@
             diagram.drawSVG('flowchat-' + index);
         });
 
-        $('.sequence-diagram').sequenceDiagram({theme: "simple"});
+        var $sequence = $('.sequence-diagram');
+        $sequence.sequenceDiagram && $sequence.sequenceDiagram({theme: "simple"});
 
         $('pre').addClass('prettyprint linenums');
-        PR.prettyPrint();
+        PR && PR.prettyPrint();
     });
 
     function loadScripts(callback) {
