@@ -28,7 +28,7 @@ router
   .get('/posts/:id', (req, res, next) => {
     Post.findById(req.params.id).then((result) => {
       res.render('post', {
-        title: post.title,
+        title: result.title,
         post: result
       });
     });
