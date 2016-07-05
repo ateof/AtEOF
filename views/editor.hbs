@@ -54,10 +54,18 @@
 
         showList(1);
 
-        $(document).on('click', function () {
-            var $sideList = $('.side-list');
-            $sideList.toggle(false);
-        });
+        $(document)
+        // 隐藏列表
+                .on('click', function () {
+                    var $sideList = $('.side-list');
+                    $sideList.toggle(false);
+                })
+                // 保存快捷键
+                .on('keyup', function (event) {
+                    if (event.altKey && event.key.toLowerCase() === 's') {
+                        save(false);
+                    }
+                });
 
         function showList(page) {
             var $sideList = getSideList();
@@ -107,6 +115,9 @@
         function save(isPublish) {
             var html = editor.getHTML();
             var markdown = editor.getMarkdown();
+            if (!markdown) {
+                return;
+            }
             var data = {
                 html: html,
                 markdown: markdown,

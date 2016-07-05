@@ -7,6 +7,9 @@ router
   .post('/posts', (req, res, next) => {
     console.log('body', req.body);
     var markdown = req.body.markdown;
+    if (!markdown && !markdown.trim()) {
+      next('内容不能为空');
+    }
     var html = req.body.html;
     var $ = cheerio.load(html);
 
