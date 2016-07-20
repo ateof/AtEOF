@@ -16,7 +16,7 @@ router
   .get('/posts', (req, res, next) => {
     var keywords = req.query.keywords;
     var page = parseInt(req.query.page) || 1;
-    Post.find(keywords, page).then((result) => {
+    Post.findPublished(keywords, page).then((result) => {
       res.render('posts', {
         title: '文章列表',
         posts: result

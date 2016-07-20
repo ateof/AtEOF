@@ -52,22 +52,31 @@ Post.findById = function (id) {
 };
 
 // 模糊查询
-Post.find = function (keywords, page, fileds) {
-  var condition = '';
+Post.find = function (keywords, page, fileds, condition) {
+  condition = condition || '';
   if (keywords) {
     var arr = keywords.split(/\s|,|，/).filter((word) => {
       return word;
     }).map(function (word) {
-      return `markdown LIKE '%${db.escape(word)}%' escape '/' `;
+      return ` markdown LIKE '%${db.escape(word)}%' escape '/' `;
     });
-    condition = arr.join(' OR ');
+
+    if (arr.length && condition) {
+      condition += ' AND ';
+    }
+    condition += arr.join(' OR ');
   }
+
   return db.find('post', {
     size: 15,
     page: page,
     orderBy: 'createAt DESC',
     condition: condition
   }, fileds);
+};
+
+Post.findPublished = function (keywords, page, fields) {
+  this.find(keywords, page, fields, 'publish=1');
 };
 
 Post.update = function (id, result) {
