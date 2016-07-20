@@ -66,7 +66,7 @@ Post.find = function (keywords, page, fileds, condition) {
     }
     condition += arr.join(' OR ');
   }
-
+  console.log('find condition:', condition);
   return db.find('post', {
     size: 15,
     page: page,
@@ -76,7 +76,7 @@ Post.find = function (keywords, page, fileds, condition) {
 };
 
 Post.findPublished = function (keywords, page, fields) {
-  this.find(keywords, page, fields, 'publish=1');
+  return this.find(keywords, page, fields, 'publish=1');
 };
 
 Post.update = function (id, result) {

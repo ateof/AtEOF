@@ -4,7 +4,7 @@ var Post = require('../entities/Post');
 var auth = require('./auth');
 router
   .get('/', (req, res, next) => {
-    Post.find(null, 1).then((result) => {
+    Post.findPublished(null, 1).then((result) => {
       res.render('index', {
         title: 'AtEOF',
         posts: result
