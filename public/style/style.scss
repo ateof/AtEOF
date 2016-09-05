@@ -1,3 +1,17 @@
 body {
+  padding-top: 70px;
   font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", Monaco, monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif;
+}
+.navbar-brand {
+  width: 120px;
+  background: url("../img/logo.png") center no-repeat;
+  background-size: contain;
+}
+
+.editormd-html-preview {
+  padding: 20px 0;
+}
+
+.caption h1 {
+  font-size: 22px;
 }

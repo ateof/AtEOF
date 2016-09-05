@@ -2,12 +2,20 @@ var express = require('express');
 var router = express.Router();
 var Post = require('../entities/Post');
 var auth = require('./auth');
+var trimHtml = require('trim-html');
+
 router
   .get('/', (req, res, next) => {
-    Post.findPublished(null, 1).then((result) => {
+    Post.findPublished(null, 1).then(result => {
       res.render('index', {
         title: 'AtEOF',
-        posts: result
+        posts: result.map(post => {
+          post.summary = trimHtml(post.html, {
+            more: true,
+            limit: 300
+          }).html;
+          return post;
+        })
       });
     }).catch(function (err) {
       next(err);

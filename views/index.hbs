@@ -1,6 +1,12 @@
-<ol>
-{{#each posts}}
-    <li><a href="/posts/{{id}}">{{title}}</a></li>
-{{/each}}
-</ol>
-
+<div class="row">
+  {{#each posts}}
+      <div class="col-sm-6 col-md-4">
+          <div class="thumbnail">
+              <div class="caption">
+                {{{summary}}}
+                  <a href="/posts/{{id}}">查看全文</a>
+              </div>
+          </div>
+      </div>
+  {{/each}}
+</div>

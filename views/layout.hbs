@@ -1,10 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>{{title}}</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link href="/lib/editor.md/css/editormd.preview.min.css" rel='stylesheet'>
+    <link rel="stylesheet" href="/style/style.css">
     <script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
-  </head>
-  <body>
-    {{{body}}}
-  </body>
+</head>
+<body>
+
+<!-- Fixed navbar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header pull-left">
+            <a class="navbar-brand" href="/"></a>
+        </div>
+        <div class="navbar-header pull-right">
+            <a href="/" class="btn btn-default navbar-btn">Home</a>
+        </div>
+    </div>
+</nav>
+<div class="container">
+  {{{body}}}
+</div>
+
+</body>
 </html>
