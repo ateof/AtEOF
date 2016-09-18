@@ -73,7 +73,7 @@ function isImageMime(mime) {
 function uploadFile(filePath, type, hash) {
   var ext = path.extname(filePath);
   var filename = hash ? hash + ext : path.basename(filePath);
-  var objectKey = [config.site, type, filename].join('/');
+  var objectKey = ['ateof', type, filename].join('/');
   var stream = fs.createReadStream(filePath);
   return client.putStream(objectKey, stream).then(function (result) {
     var pathname = url.parse(result.url).pathname;
