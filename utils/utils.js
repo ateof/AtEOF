@@ -31,9 +31,10 @@ module.exports.uploadFile = co.wrap(function*(req) {
       if (result.url) {
         file.url = result.url;
       }
+      return file;
     }
   }
-  return files;
+  throw 'No files upload';
 });
 
 /**

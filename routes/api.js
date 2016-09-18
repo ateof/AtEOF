@@ -57,12 +57,12 @@ router
     }).catch(next);
   })
   .post('/upload', (req, res, next) => {
-    uploadFile(req).then(files => {
-      if (files.file && files.file.url) {
+    uploadFile(req).then(file => {
+      if (file && file.url) {
         res.json({
           success: 1,
           message: '上传图片成功!',
-          url: files.file.url
+          url: file.url
         });
       }
     }).catch(next);
