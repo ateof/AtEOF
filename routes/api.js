@@ -2,6 +2,7 @@ var cheerio = require('cheerio');
 var express = require('express');
 var router = express.Router();
 var Post = require('../entities/Post');
+var uploadFile = require('../utils/utils').uploadFile;
 
 router
   .post('/posts', (req, res, next) => {
@@ -47,17 +48,24 @@ router
     var page = req.query.page || 1;
     Post.find(keywords, page).then((posts) => {
       res.json(posts);
-    }).catch((err) => {
-      next(err);
-    });
+    }).catch(next);
   })
   .get('/posts/:id', (req, res, next) => {
     var id = req.params.id;
     Post.findById(id).then((post) => {
       res.json(post);
-    }).catch((err) => {
-      next(err);
-    });
+    }).catch(next);
+  })
+  .post('/upload', (req, res, next) => {
+    uploadFile(req).then(files => {
+      if (files.file && files.file.url) {
+        res.json({
+          success: 1,
+          message: '上传图片成功!',
+          url: files.file.url
+        });
+      }
+    }).catch(next);
   });
 
 module.exports = router;

@@ -1,4 +1,11 @@
 {
   "username": "admin",
-  "password": "admin"
+  "password": "admin",
+  "uploadDir": "upload",
+  "oss": {
+    "region": "",
+    "accessKeyId": "",
+    "accessKeySecret": "",
+    "bucket": ""
+  }
 }
